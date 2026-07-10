@@ -1,7 +1,7 @@
 {
-  "name": "crasher-panel",
+  "name": "mango-panel",
   "version": "1.0.0",
-  "description": "Tooze Panel - Roblox Script Manager",
+  "description": "Mango Panel - Roblox Script Manager",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,7 +14,6 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["roblox", "panel", "admin"],
   "author": "mishagolik",
   "license": "MIT"
 }
