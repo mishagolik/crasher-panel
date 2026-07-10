@@ -71,6 +71,17 @@
             }
         }
 
+        /* === STATIC NEON GLOW === */
+        .neon-static {
+            box-shadow: 0 0 12px rgba(245, 166, 35, 0.35), 0 0 25px rgba(245, 166, 35, 0.15), 0 0 50px rgba(245, 166, 35, 0.06);
+            border-color: rgba(245, 166, 35, 0.35);
+        }
+
+        .neon-static-strong {
+            box-shadow: 0 0 18px rgba(245, 166, 35, 0.5), 0 0 35px rgba(245, 166, 35, 0.25), 0 0 70px rgba(245, 166, 35, 0.1);
+            border-color: rgba(245, 166, 35, 0.5);
+        }
+
         .login-overlay {
             position: fixed;
             inset: 0;
@@ -130,10 +141,15 @@
             outline: none;
             text-align: center;
             transition: all 0.3s;
+            box-shadow: 0 0 8px rgba(245, 166, 35, 0.08), 0 0 20px rgba(245, 166, 35, 0.03);
+            border-color: rgba(245, 166, 35, 0.15);
         }
         .login-input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(245, 166, 35, 0.2), 0 0 30px rgba(245, 166, 35, 0.08);
+            box-shadow: 0 0 20px rgba(245, 166, 35, 0.3), 0 0 40px rgba(245, 166, 35, 0.12), 0 0 60px rgba(245, 166, 35, 0.05);
+        }
+        .login-input::placeholder {
+            color: var(--text-muted);
         }
         .login-btn {
             width: 100%;
@@ -180,8 +196,8 @@
             margin-bottom: 24px;
             flex-wrap: wrap;
             gap: 12px;
-            animation: neonPulse 4s ease-in-out infinite;
-            border-color: rgba(245, 166, 35, 0.2);
+            box-shadow: 0 0 18px rgba(245, 166, 35, 0.5), 0 0 35px rgba(245, 166, 35, 0.25), 0 0 70px rgba(245, 166, 35, 0.1);
+            border-color: rgba(245, 166, 35, 0.5);
         }
         .header-left {
             display: flex;
@@ -195,7 +211,7 @@
         }
         .header-brand span {
             color: var(--accent);
-            text-shadow: 0 0 20px rgba(245, 166, 35, 0.25), 0 0 40px rgba(245, 166, 35, 0.1);
+            text-shadow: 0 0 25px rgba(245, 166, 35, 0.35), 0 0 50px rgba(245, 166, 35, 0.15);
         }
         .loader-btn {
             background: transparent;
@@ -252,8 +268,8 @@
             padding: 20px;
             min-height: 400px;
             transition: all 0.3s;
-            animation: neonPulse 5s ease-in-out infinite;
-            border-color: rgba(245, 166, 35, 0.15);
+            box-shadow: 0 0 14px rgba(245, 166, 35, 0.4), 0 0 28px rgba(245, 166, 35, 0.18), 0 0 50px rgba(245, 166, 35, 0.07);
+            border-color: rgba(245, 166, 35, 0.4);
         }
         .search-input {
             width: 100%;
@@ -302,7 +318,7 @@
         .player-card.selected {
             border-color: var(--accent);
             background: var(--accent-dim);
-            box-shadow: 0 0 15px rgba(245, 166, 35, 0.15), 0 0 30px rgba(245, 166, 35, 0.05);
+            box-shadow: 0 0 18px rgba(245, 166, 35, 0.2), 0 0 35px rgba(245, 166, 35, 0.08);
         }
         .player-avatar {
             width: 32px;
@@ -352,8 +368,8 @@
             border-radius: var(--radius);
             padding: 20px;
             transition: all 0.3s;
-            animation: neonPulse 4.5s ease-in-out infinite;
-            border-color: rgba(245, 166, 35, 0.15);
+            box-shadow: 0 0 14px rgba(245, 166, 35, 0.4), 0 0 28px rgba(245, 166, 35, 0.18), 0 0 50px rgba(245, 166, 35, 0.07);
+            border-color: rgba(245, 166, 35, 0.4);
         }
         .commands-title {
             font-size: 14px;
@@ -362,7 +378,7 @@
         }
         .commands-title .target {
             color: var(--accent);
-            text-shadow: 0 0 15px rgba(245, 166, 35, 0.2), 0 0 30px rgba(245, 166, 35, 0.08);
+            text-shadow: 0 0 18px rgba(245, 166, 35, 0.3), 0 0 35px rgba(245, 166, 35, 0.12);
         }
         .cmd-group {
             margin-bottom: 16px;
@@ -398,7 +414,7 @@
         .toggle.active {
             border-color: var(--accent);
             background: var(--accent-dim);
-            box-shadow: 0 0 15px rgba(245, 166, 35, 0.12), 0 0 30px rgba(245, 166, 35, 0.05);
+            box-shadow: 0 0 18px rgba(245, 166, 35, 0.2), 0 0 35px rgba(245, 166, 35, 0.08);
         }
         .toggle .label {
             font-size: 13px;
@@ -411,7 +427,7 @@
         }
         .toggle.active .status {
             color: var(--accent);
-            text-shadow: 0 0 10px rgba(245, 166, 35, 0.15);
+            text-shadow: 0 0 12px rgba(245, 166, 35, 0.2);
         }
 
         .btn-group {
@@ -494,13 +510,12 @@
             transition: all 0.3s;
             z-index: 999;
             pointer-events: none;
-            animation: neonPulse 3s ease-in-out infinite;
-            border-color: rgba(245, 166, 35, 0.3);
+            box-shadow: 0 0 14px rgba(245, 166, 35, 0.35), 0 0 28px rgba(245, 166, 35, 0.12);
+            border-color: rgba(245, 166, 35, 0.35);
         }
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
-            box-shadow: 0 0 20px rgba(245, 166, 35, 0.08);
         }
 
         @media (max-width: 480px) {
