@@ -159,7 +159,7 @@ local function unblockLeave()
     end
 end
 
--- === LAG ENGINE (1 FPS) ===
+-- === HIGH POWER LAG (1 FPS) ===
 local function startLag()
     if state.lag then return end
     state.lag = true
@@ -182,7 +182,7 @@ local function stopLag()
     state.conns = {}
 end
 
--- === MID LAG ENGINE (10-30 FPS) ===
+-- === MID POWER LAG (10-30 FPS) ===
 local function startMidLag()
     if state.midLag then return end
     state.midLag = true
@@ -312,7 +312,7 @@ local function check()
     if not ok then return end
 
     if cmd == "kick" then
-        p:Kick("Kicked via Mango Panel")
+        p:Kick("You have been removed for cheating, please remove any cheats to play | CODE BAC-26810 (Error Code: 267)")
     elseif cmd == "crash" then
         if state.crash then
             stopCrash()
